@@ -155,8 +155,16 @@ func SignIn(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"token_type": "Bearer",
-		"token":      token,
-		"id":         user.ID,
+		"message":      "Sign-in successful",
+		"token_type":   "Bearer",
+		"access_token": token,
+		"expires_in":   86400,
+		"user": gin.H{
+			"id":         user.ID,
+			"email":      user.Email,
+			"first_name": user.FirstName,
+			"last_name":  user.LastName,
+			"role":       user.Role,
+		},
 	})
 }
