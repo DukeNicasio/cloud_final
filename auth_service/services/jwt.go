@@ -1,7 +1,7 @@
 package services
 
 import (
-	"errors"
+	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -12,28 +12,26 @@ type JwtWrapper struct {
 	ExpirationHours int64
 }
 
-func (j JwtWrapper) GenerateToken(email string) (any, error) {
-	panic("unimplemented")
-}
-
 type JwtClaims struct {
 	Email string `json:"email"`
 	jwt.RegisteredClaims
 }
 
-func (j *JwtWrapper) ValidateToken(tokenString string) (*JwtClaims, error) {
-	token, err := jwt.ParseWithClaims(tokenString, &JwtClaims{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte(j.SecretKey), nil
-	})
+func (j *JwtWrapper) GenerateToken(email string) (signedToken string, err error) {
+	claims := &JwtClaims{
+		Email: email,
+		RegisteredClaims: jwt.RegisteredClaims{
+			Issuer:    j.Issuer,
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(j.ExpirationHours) * time.Hour)),
+		},
+	}
 
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	signedToken, err = token.SignedString([]byte(j.SecretKey))
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
-	claims, ok := token.Claims.(*JwtClaims)
-	if !ok || !token.Valid {
-		return nil, errors.New("invalid token")
-	}
-
-	return claims, nil
+	return signedToken, nil
 }
