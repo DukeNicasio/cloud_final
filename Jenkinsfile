@@ -15,19 +15,19 @@ pipeline {
 
         stage('Shutdown Existing Containers') {
             steps {
-                sh "docker-compose -f ${COMPOSE_FILE} down"
+                sh "docker-compose -f ${COMPOSE_FILE} down --remove-orphans"
             }
         }
 
         stage('Build Services') {
             steps {
-                sh "docker-compose -f ${COMPOSE_FILE} build"
+                sh "docker-compose -f ${COMPOSE_FILE} build --no-cache"
             }
         }
 
         stage('Restart Services') {
             steps {
-                sh "docker-compose -f ${COMPOSE_FILE} up -d"
+                sh "docker-compose -f ${COMPOSE_FILE} up -d --build"
             }
         }
     }
