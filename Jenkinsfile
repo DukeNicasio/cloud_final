@@ -13,15 +13,21 @@ pipeline {
             }
         }
 
+        stage('Shutdown Existing Containers') {
+            steps {
+                sh "docker-compose -f ${COMPOSE_FILE} down"
+            }
+        }
+
         stage('Build Services') {
             steps {
-                sh "docker-compose -f ${COMPOSE_FILE} build user_service election_service vote_service candidate_service"
+                sh "docker-compose -f ${COMPOSE_FILE} build"
             }
         }
 
         stage('Restart Services') {
             steps {
-                sh "docker-compose -f ${COMPOSE_FILE} up -d user_service election_service vote_service candidate_service"
+                sh "docker-compose -f ${COMPOSE_FILE} up -d"
             }
         }
     }
