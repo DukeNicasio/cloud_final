@@ -86,11 +86,11 @@ services:
       - "8004:8004"
 
   prometheus:
-    image: prom/prometheus
+    build:
+      context: .
+      dockerfile: Dockerfile.prometheus
     container_name: prometheus
     restart: unless-stopped
-    volumes:
-      - /var/jenkins_home/workspace/test/prometheus.yml:/etc/prometheus/prometheus.yml
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--web.external-url=/prometheus/'
